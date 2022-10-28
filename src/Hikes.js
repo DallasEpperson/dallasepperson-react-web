@@ -1,33 +1,51 @@
-import { MapContainer, TileLayer, Marker, Polyline, Popup } from 'react-leaflet';
+import { useEffect, useState } from 'react';
+import { MapContainer, TileLayer, Polyline, Popup } from 'react-leaflet';
 
 import "leaflet/dist/leaflet.css";
 import "./Hikes.scss";
 
-const polyline = [
-    [51.505, -0.09],
-    [51.51, -0.1],
-    [51.51, -0.12],
-  ];
-
-const lineOptions = { color: 'lime'};
+function Hike({ hike }) {
+    return (
+        <Polyline positions={hike.path}>
+            <Popup>
+                Yo
+            </Popup>
+        </Polyline>
+    );
+}
 
 function Hikes() {
+    const [hikes, setHikes] = useState([]);
+
+    const getHikes = async () => {
+        let hikes = await (await fetch('/hikes/hikes.json',
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })).json();
+        return hikes;
+    };
+
+    useEffect(() => {
+        (async () => {
+            let jsonHikes = await getHikes();
+            setHikes(jsonHikes.hikes);
+        })();
+    }, []);
+
     return (
         <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={false}>
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <Marker position={[51.505, -0.09]}>
-                <Popup>
-                    A pretty CSS3 popup. <br /> Easily customizable.
-                </Popup>
-            </Marker>
-            <Polyline pathOptions={lineOptions} positions={polyline}>
-                <Popup>
-                    I popped up.
-                </Popup>
-            </Polyline>
+            {hikes.map((a) => {
+                return (
+                    <Hike key={'hike-' + a.id} hike={a} />
+                );
+            })}
         </MapContainer>
     );
 }
