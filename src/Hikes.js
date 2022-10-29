@@ -21,6 +21,16 @@ const convertToPreferredUnit = function (meters) {
     }
 };
 
+const randomColor = function(){
+    const randomInteger = function(min,max){
+      return Math.floor(Math.random() * (max-min+1))+min;
+    };
+    var hue = randomInteger(210,390)%360;
+    var sat = randomInteger(45,95);
+    var lum = randomInteger(40,60);
+    return 'hsl(' + hue + ',' + sat + '%,' + lum + '%)';
+  };
+
 const fakeDelay = (ms) => {
     return new Promise(r => setTimeout(r, ms));
 };
@@ -59,12 +69,17 @@ function HikePath({ hike }) {
         setLoadingDetails(false);
     };
 
+    const options = {
+        color: randomColor(),
+        weight: 8
+    };
+
     const handleClick = async (_event) => {
         await loadDetails(hike.id);
     };
 
     return (
-        <Polyline positions={hike.path} eventHandlers={{ click: handleClick }}>
+        <Polyline pathOptions={options} positions={hike.path} eventHandlers={{ click: handleClick }}>
             <Popup>
                 <div className='details'>
                     {loadingDetails ?
