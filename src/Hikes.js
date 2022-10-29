@@ -13,15 +13,26 @@ const fakeDelay = (ms) => {
 function HikePath({ hike }) {
     const [loadingDetails, setLoadingDetails] = useState(true);
     const [name, setName] = useState("");
+    const [date, setDate] = useState(0);
     const [distance, setDistance] = useState(0);
+    const [oab, setOab] = useState(false);
     
 
     const loadDetails = async (id) => {
         setLoadingDetails(true);
         console.log(`Loading details of hike ${id}.`);
         await fakeDelay(2000);
-        setName("The hike name");
-        setDistance(1234);
+        let details = await (await fetch(`/hikes/hike-${id}.json`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })).json();
+        setName(details.name);
+        setDate(details.date);
+        setDistance(details.distance);
+        setOab(!!details.outAndBack);
         setLoadingDetails(false);
     };
 
@@ -38,7 +49,13 @@ function HikePath({ hike }) {
                         :
                         <div>
                             <LabeledData label='Name' value={name} />
+                            <LabeledData label='Date' value={(new Date(date)).toLocaleDateString()} />
                             <LabeledData label='Distance' value={distance} />
+                            {
+                                oab?
+                                <LabeledData label='Out and Back' value='Yes' />
+                                : null
+                            }
                         </div>
                     }
                 </div>
