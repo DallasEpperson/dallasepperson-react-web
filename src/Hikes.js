@@ -1,3 +1,5 @@
+/// <reference path="./typedef/hike.d.ts"/>
+
 import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Polyline, Popup } from 'react-leaflet';
 
@@ -5,6 +7,19 @@ import LabeledData from './LabeledData';
 
 import "leaflet/dist/leaflet.css";
 import "./Hikes.scss";
+
+const preferredUnit = 'mi';
+
+const convertToPreferredUnit = function (meters) {
+    switch (preferredUnit) {
+        case 'KM':
+            return (meters / 1000).toFixed(2) + 'KM';
+        case 'mi':
+            return (meters * 0.00062137).toFixed(2) + 'mi';
+        default:
+            return meters + 'M';
+    }
+};
 
 const fakeDelay = (ms) => {
     return new Promise(r => setTimeout(r, ms));
@@ -16,19 +31,27 @@ function HikePath({ hike }) {
     const [date, setDate] = useState(0);
     const [distance, setDistance] = useState(0);
     const [oab, setOab] = useState(false);
-    
 
-    const loadDetails = async (id) => {
-        setLoadingDetails(true);
-        console.log(`Loading details of hike ${id}.`);
-        await fakeDelay(2000);
-        let details = await (await fetch(`/hikes/hike-${id}.json`,
+    /** Get hike details from API.
+     * @param {number} id ID of the hike.
+     * @returns {Promise<Hike>} Promise resolving to the hike details.
+     */
+    const getHikeDetails = async (id) => {
+        return await (await fetch(`/hikes/hike-${id}.json`,
             {
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
                 }
             })).json();
+    };
+
+
+    const loadDetails = async (id) => {
+        setLoadingDetails(true);
+        console.log(`Loading details of hike ${id}.`);
+        await fakeDelay(2000);
+        let details = await getHikeDetails(id);
         setName(details.name);
         setDate(details.date);
         setDistance(details.distance);
@@ -50,11 +73,11 @@ function HikePath({ hike }) {
                         <div>
                             <LabeledData label='Name' value={name} />
                             <LabeledData label='Date' value={(new Date(date)).toLocaleDateString()} />
-                            <LabeledData label='Distance' value={distance} />
+                            <LabeledData label='Distance' value={convertToPreferredUnit(distance)} />
                             {
-                                oab?
-                                <LabeledData label='Out and Back' value='Yes' />
-                                : null
+                                oab ?
+                                    <LabeledData label='Out and Back' value='Yes' />
+                                    : null
                             }
                         </div>
                     }
