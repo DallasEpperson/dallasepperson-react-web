@@ -1,0 +1,13 @@
+.labeled-data {
+    display: flex;
+    gap: 0.25em;
+    width: max-content;
+
+    .label {
+        font-weight: bold;
+
+        &::after {
+            content: ':';
+        }
+    }
+}
