@@ -1,6 +1,6 @@
 import './App.css';
 
-import Hikes from './Hikes';
+import Hikes from './Hikes/Hikes';
 
 import {
   BrowserRouter,

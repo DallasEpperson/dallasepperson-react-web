@@ -1,9 +1,9 @@
-/// <reference path="./typedef/hike.d.ts"/>
+/// <reference path="../typedef/hike.d.ts"/>
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { MapContainer, TileLayer, Polyline, Popup } from 'react-leaflet';
 
-import LabeledData from './LabeledData';
+import LabeledData from '../LabeledData';
 
 import "leaflet/dist/leaflet.css";
 import "./Hikes.scss";
@@ -69,10 +69,12 @@ function HikePath({ hike }) {
         setLoadingDetails(false);
     };
 
-    const options = {
-        color: randomColor(),
-        weight: 8
-    };
+    const options = useMemo(() => {
+        return {
+            color: randomColor(),
+            weight: 8
+        };
+    }, []);
 
     const handleClick = async (_event) => {
         await loadDetails(hike.id);
