@@ -13,7 +13,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route exact path="/" element={<div>Default page</div>} />
-        <Route path="/hikes" element={<Hikes />} />
+        <Route path="/hikes/*" element={<Hikes />} />
+        <Route path="*" element={<div>No match</div>} />
       </Routes>
     </BrowserRouter>
   );

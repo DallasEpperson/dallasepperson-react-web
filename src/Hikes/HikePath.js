@@ -1,6 +1,7 @@
 /// <reference path="../typedef/hike.d.ts"/>
 
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Polyline, Popup } from 'react-leaflet';
 
 import LabeledData from '../LabeledData';
@@ -93,6 +94,11 @@ function HikePath({ hike }) {
                                     <LabeledData label='Out and Back' value='Yes' />
                                     : null
                             }
+                            <div className='full-link'>
+                                <Link to={`/hikes/${hike.id}`}>
+                                    Full Details
+                                </Link>
+                            </div>
                         </div>
                     }
                 </div>
