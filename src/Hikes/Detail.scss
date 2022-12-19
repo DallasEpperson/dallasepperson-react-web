@@ -1,0 +1,22 @@
+.hike-detail {
+    .header {
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+        gap: 1em;
+
+        .name {
+            font-size: 2em;
+        }
+    }
+
+    .leaflet-container {
+        height: 50vh;
+    }
+
+    .terrain {
+        background-color: #EEF;
+        height: 5ex;
+
+    }
+}

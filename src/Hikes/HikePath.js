@@ -58,7 +58,7 @@ function HikePath({ hike }) {
     const loadDetails = async (id) => {
         setLoadingDetails(true);
         console.log(`Loading details of hike ${id}.`);
-        await fakeDelay(1000);
+        await fakeDelay(1);
         let details = await getHikeDetails(id);
         setName(details.name);
         setDate(details.date);
