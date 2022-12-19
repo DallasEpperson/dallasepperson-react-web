@@ -6,6 +6,7 @@ import { LatLngBounds } from "leaflet";
 import './Detail.scss';
 import HikePath from "./HikePath";
 import LabeledData from "../LabeledData";
+import { Helmet } from "react-helmet";
 
 const preferredUnit = 'mi';
 
@@ -75,6 +76,9 @@ function Detail() {
 
     return (
         <div className="hike-detail">
+            <Helmet>
+                <title>Dallas Epperson Hikes | {name}</title>
+            </Helmet>
             <div className="header">
                 <div className="return">
                     <Link to="/hikes/">
