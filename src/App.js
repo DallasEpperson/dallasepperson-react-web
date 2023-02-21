@@ -1,6 +1,7 @@
 import './App.css';
 
 import Hikes from './Hikes/Hikes';
+import Home from './Home';
 
 import {
   BrowserRouter,
@@ -12,7 +13,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route exact path="/" element={<div>Default page</div>} />
+        <Route exact path="/" element={<Home />} />
         <Route path="/hikes/*" element={<Hikes />} />
         <Route path="*" element={<div>No match</div>} />
       </Routes>
