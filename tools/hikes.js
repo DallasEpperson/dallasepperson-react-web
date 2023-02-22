@@ -17,12 +17,12 @@ const getSingleHike = (id) => {
         throw new Error('Invalid hike file.');
     }
 
-    return hike;
+    return [hike, hikeFileLoc];
 };
 
 const reverseLatLong = (id) => {
     try{
-        var hike = getSingleHike(id);
+        var [hike, hikeFileLoc] = getSingleHike(id);
     } catch (err){
         console.error(err);
         return;
@@ -76,7 +76,7 @@ const getLength = (id) => {
     };
 
     try{
-        var hike = getSingleHike(id);
+        var [hike] = getSingleHike(id);
     } catch (err){
         console.error(err);
         return;
