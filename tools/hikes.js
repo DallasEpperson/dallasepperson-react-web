@@ -2,6 +2,24 @@ const fs = require('fs');
 
 const hikesFolder = '../public/hikes';
 
+
+var getDistance = function(coordinates){
+    var degToRad = function(deg){
+        return deg * (Math.PI/180);
+    };
+    var distInMeters = 0;
+    for (var i = 1; i < coordinates.length; i++){
+        var lat1 = coordinates[i-1][0];
+        var lon1 = coordinates[i-1][1];
+        var lat2 = coordinates[i][0];
+        var lon2 = coordinates[i][1];
+        var p1 = degToRad(lat1), p2 = degToRad(lat2), dl = degToRad(lon2-lon1), R = 6371e3; // gives d in metres
+        var d = Math.acos( Math.sin(p1)*Math.sin(p2) + Math.cos(p1)*Math.cos(p2) * Math.cos(dl) ) * R;
+        distInMeters += !d? 0 : d;
+    }
+    return distInMeters;
+};
+
 const getSingleHike = (id) => {
     const hikeFiles = fs.readdirSync(hikesFolder)
         .filter((fn) => fn == `hike-${id}.json`);
@@ -58,23 +76,6 @@ const combine = () => {
 };
 
 const getLength = (id) => {
-    var getDistance = function(coordinates){
-        var degToRad = function(deg){
-            return deg * (Math.PI/180);
-        };
-        var distInMeters = 0;
-        for (var i = 1; i < coordinates.length; i++){
-            var lat1 = coordinates[i-1][0];
-            var lon1 = coordinates[i-1][1];
-            var lat2 = coordinates[i][0];
-            var lon2 = coordinates[i][1];
-            var p1 = degToRad(lat1), p2 = degToRad(lat2), dl = degToRad(lon2-lon1), R = 6371e3; // gives d in metres
-            var d = Math.acos( Math.sin(p1)*Math.sin(p2) + Math.cos(p1)*Math.cos(p2) * Math.cos(dl) ) * R;
-            distInMeters += !d? 0 : d;
-        }
-        return distInMeters;
-    };
-
     try{
         var [hike] = getSingleHike(id);
     } catch (err){
@@ -83,6 +84,35 @@ const getLength = (id) => {
     }
 
     console.log(`Hike distance: ${getDistance(hike.path)} meters.`);
+};
+
+const convertFromOld = (oldFile, newFile, newId) => {
+    try{
+        var oldRaw = fs.readFileSync(oldFile);
+        var oldHike = JSON.parse(oldRaw);
+        if(!oldHike.hikeName){
+            throw new Error('Invalid old hike file.');
+        }
+        let oldPath = oldHike.features[0].geometry.coordinates;
+        let newPath = oldPath.map(c => [c[1], c[0]]);
+        let newDate = new Date(`${oldHike.hikeDate.replaceAll('.','-')}T16:00Z`).getTime();
+        var newHike = {
+            id: parseInt(newId),
+            name: oldHike.hikeName,
+            date: newDate,
+            path: newPath
+        };
+        if(oldHike.outAndBack) newHike['outAndBack'] = true;
+        let newDistance = getDistance(newPath);
+        if(oldHike.outAndBack) newDistance = newDistance * 2;
+        newHike['distance'] = newDistance;
+        
+        let newRaw = JSON.stringify(newHike, null, 0);
+        fs.writeFileSync(newFile, newRaw);
+    } catch (err){
+        console.error(err);
+        return;
+    }
 };
 
 const args = process.argv;
@@ -107,6 +137,10 @@ switch ((args[2] || "").toUpperCase()) {
     
     case "--COMBINE":
         combine();
+        break;
+    
+    case "--CONVERTFROMOLD":
+        convertFromOld(args[3], args[4], args[5]);
         break;
 
     default:
